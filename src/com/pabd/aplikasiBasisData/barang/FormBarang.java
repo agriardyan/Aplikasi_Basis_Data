@@ -5,6 +5,7 @@
  */
 package com.pabd.aplikasiBasisData.barang;
 
+import com.pabd.aplikasiBasisData.kartuStok.FormKartuStok;
 import com.pabd.aplikasiBasisData.kategori.Kategori;
 import com.pabd.aplikasiBasisData.kategori.KategoriTableModel;
 import java.text.DecimalFormat;
@@ -1362,6 +1363,8 @@ public class FormBarang extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.setVisible(false);
         System.exit(0);
+        
+        
 
     }//GEN-LAST:event_keluarButtonActionPerformed
 

@@ -7,6 +7,7 @@ package com.pabd.aplikasiBasisData.kategori;
 
 import com.pabd.aplikasiBasisData.DBConn.DataBase;
 import com.pabd.aplikasiBasisData.barang.FormBarang;
+import com.pabd.aplikasiBasisData.kartuStok.FormKartuStok;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -69,6 +70,7 @@ public class FormKategori extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         tambahBarangMenuItem = new javax.swing.JMenuItem();
+        menuItemKartuStok = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         cariMenuItem = new javax.swing.JMenuItem();
 
@@ -246,6 +248,14 @@ public class FormKategori extends javax.swing.JFrame {
         });
         jMenu1.add(tambahBarangMenuItem);
 
+        menuItemKartuStok.setText("Kartu Stok");
+        menuItemKartuStok.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemKartuStokActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemKartuStok);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
@@ -372,6 +382,12 @@ public class FormKategori extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_tambahBarangMenuItemActionPerformed
 
+    private void menuItemKartuStokActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemKartuStokActionPerformed
+        // TODO add your handling code here:
+        new FormKartuStok().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_menuItemKartuStokActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -424,6 +440,7 @@ public class FormKategori extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField kodeTF;
+    private javax.swing.JMenuItem menuItemKartuStok;
     private javax.swing.JTextField namaTF;
     private javax.swing.JButton simpanButton;
     private javax.swing.JMenuItem tambahBarangMenuItem;

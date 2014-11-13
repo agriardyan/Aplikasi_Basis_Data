@@ -3,10 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pabd.aplikasiBasisData.kartuStok;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,6 +23,12 @@ public class FormKartuStok extends javax.swing.JFrame {
      */
     public FormKartuStok() {
         initComponents();
+    }
+
+    private void lihatTableKategori() {
+        List<KartuStok> kartuStokList = KartuStok.lihatKartuStokForTableModel(kodeBarangTF.getText());
+        KartuStokTableModel model = new KartuStokTableModel(kartuStokList);
+        tableDaftarBarang.setModel(model);
     }
 
     /**
@@ -165,8 +175,26 @@ public class FormKartuStok extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("Keterangan");
 
+        keluarTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                keluarTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                keluarTFFocusLost(evt);
+            }
+        });
+
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel9.setText("Keluar");
+
+        masukTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                masukTFFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                masukTFFocusLost(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel10.setText("Masuk");
@@ -206,15 +234,16 @@ public class FormKartuStok extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(13, 13, 13)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8)))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel6)
+                                .addComponent(jLabel8))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel10))))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel9))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -270,6 +299,11 @@ public class FormKartuStok extends javax.swing.JFrame {
         cetakButton.setText("Cetak");
 
         simpanButton.setText("Simpan");
+        simpanButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                simpanButtonActionPerformed(evt);
+            }
+        });
 
         hapusButton.setText("Hapus");
 
@@ -281,6 +315,11 @@ public class FormKartuStok extends javax.swing.JFrame {
         });
 
         keluarButton.setText("Keluar");
+        keluarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                keluarButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -373,15 +412,84 @@ public class FormKartuStok extends javax.swing.JFrame {
 
     private void kodeBarangTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kodeBarangTFActionPerformed
         // TODO add your handling code here:
-        kodeBarangTF.getText();
+        lihatTableKategori();
+        
+        ResultSet informasiBarangList;
+        informasiBarangList = KartuStok.isiInformasiBarang(kodeBarangTF.getText());
+        try {
+            while (informasiBarangList.next()) {
+                namaBarangTF.setText(informasiBarangList.getString(1));
+                satuanTF.setText(informasiBarangList.getString(2));
+                kategoriTF.setText(informasiBarangList.getString(3));
+            }
+            kodeBarangTF.setEditable(false);
+            namaBarangTF.setEditable(false);
+            kategoriTF.setEditable(false);
+            satuanTF.setEditable(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormKartuStok.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_kodeBarangTFActionPerformed
 
     private void batalButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batalButtonActionPerformed
         // TODO add your handling code here:
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy"); 
-        String tgl = sdf.format(jDateChooser1.getDate());
-        System.out.println(tgl);
+
+        kodeBarangTF.setText(null);
+        namaBarangTF.setText(null);
+        kategoriTF.setText(null);
+        satuanTF.setText(null);
+
+        kodeBarangTF.setEditable(true);
+        namaBarangTF.setEditable(true);
+        kategoriTF.setEditable(true);
+        satuanTF.setEditable(true);
     }//GEN-LAST:event_batalButtonActionPerformed
+
+    private void keluarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keluarButtonActionPerformed
+        // TODO add your handling code here:
+
+
+    }//GEN-LAST:event_keluarButtonActionPerformed
+
+    private void simpanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanButtonActionPerformed
+        // TODO add your handling code here:
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
+        String tgl = sdf.format(jDateChooser1.getDate());
+        System.out.println(tgl.toUpperCase());
+
+        KartuStok kartuStok = new KartuStok();
+        kartuStok.getmBarang().setmKodeBarang(kodeBarangTF.getText());
+        kartuStok.setmTanggal(tgl.toUpperCase());
+        kartuStok.setmNomorBukti(noBuktiTF.getText().toUpperCase());
+        kartuStok.setmKeterangan(keteranganTF.getText().toUpperCase());
+
+        kartuStok.setmMasuk(Double.parseDouble(masukTF.getText()));
+        kartuStok.setmKeluar(Double.parseDouble(keluarTF.getText()));
+
+        KartuStok.simpanData(kartuStok);
+    }//GEN-LAST:event_simpanButtonActionPerformed
+
+    private void masukTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_masukTFFocusGained
+        // TODO add your handling code here:
+        keluarTF.setText("0");
+        keluarTF.setEditable(false);
+    }//GEN-LAST:event_masukTFFocusGained
+
+    private void masukTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_masukTFFocusLost
+        // TODO add your handling code here:
+        keluarTF.setEditable(true);
+    }//GEN-LAST:event_masukTFFocusLost
+
+    private void keluarTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_keluarTFFocusGained
+        // TODO add your handling code here:
+        masukTF.setText("0");
+        masukTF.setEditable(false);
+    }//GEN-LAST:event_keluarTFFocusGained
+
+    private void keluarTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_keluarTFFocusLost
+        // TODO add your handling code here:
+        masukTF.setEditable(true);
+    }//GEN-LAST:event_keluarTFFocusLost
 
     /**
      * @param args the command line arguments

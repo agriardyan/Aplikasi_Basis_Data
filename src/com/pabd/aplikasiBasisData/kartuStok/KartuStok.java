@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pabd.aplikasiBasisData.kartuStok;
 
 import com.pabd.aplikasiBasisData.DBConn.DataBase;
@@ -13,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,16 +24,17 @@ import javax.swing.JOptionPane;
  * @author root
  */
 public class KartuStok {
-    
+
     private Barang mBarang;
     private String mTanggal;
     private String mNomorBukti;
     private String mKeterangan;
     private double mMasuk;
     private double mKeluar;
-    private double mSaldo;  
+    private double mSaldo;
 
     public KartuStok() {
+        mBarang = new Barang();
     }
 
     public Barang getmBarang() {
@@ -91,7 +92,7 @@ public class KartuStok {
     public void setmSaldo(double mSaldo) {
         this.mSaldo = mSaldo;
     }
-    
+
     public static void simpanData(KartuStok pKartuStok) {
         Connection connection = null;
         PreparedStatement prepStatement = null;
@@ -120,7 +121,7 @@ public class KartuStok {
             }
         }
     }
-    
+
     public static List<Barang> lihatBarangBerdasarKode(String kode) {
         Connection connection = null;
         PreparedStatement prepStatement = null;
@@ -151,8 +152,9 @@ public class KartuStok {
                 barangList.add(barang);
             }
             connection.commit();
-        } catch (SQLException exception) {
-            List<Kategori> kategoriList = new ArrayList<Kategori>();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Tidak ditemukan data");
+            Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 connection.setAutoCommit(false);
@@ -164,10 +166,93 @@ public class KartuStok {
                 }
 
             } catch (SQLException ex) {
-                Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KartuStok.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return barangList;
     }
-    
+
+    public static List<KartuStok> lihatKartuStokForTableModel(String pKodeBarang) {
+        Connection connection = null;
+        PreparedStatement prepStatement = null;
+        ResultSet result = null;
+        List<KartuStok> kartuStokList = new ArrayList<KartuStok>();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy");
+
+        double saldoAwal = 0;
+        int counter = 0;
+
+        try {
+            connection = DataBase.getConnection();
+            connection.setAutoCommit(false);
+            prepStatement = connection.prepareStatement("SELECT tanggal, nomor_bukti, "
+                    + "keterangan, masuk, keluar FROM kartu_stok WHERE kode_barang = ? ORDER BY tanggal ASC");
+            prepStatement.setString(1, pKodeBarang);
+            result = prepStatement.executeQuery();
+            while (result.next()) {
+                KartuStok kartuStok = new KartuStok();
+                String tgl = sdf.format(result.getDate("tanggal"));
+
+                kartuStok.setmTanggal(tgl.toUpperCase());
+                kartuStok.setmNomorBukti(result.getString("nomor_bukti"));
+                kartuStok.setmKeterangan(result.getString("keterangan"));
+                kartuStok.setmMasuk(result.getDouble("masuk"));
+                kartuStok.setmKeluar(result.getDouble("keluar"));
+                
+                if (counter == 0) {
+                    saldoAwal = result.getDouble("masuk") - result.getDouble("keluar");
+                    kartuStok.setmSaldo(saldoAwal);
+                    System.out.println(saldoAwal);
+                } else {
+                    kartuStok.setmSaldo(saldoAwal + (result.getDouble("masuk") - result.getDouble("keluar")));
+                }
+
+                counter++;
+                kartuStokList.add(kartuStok);
+            }
+            connection.commit();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Tidak ditemukan data");
+            Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                connection.setAutoCommit(false);
+                if (result != null) {
+                    result.close();
+                }
+                if (prepStatement != null) {
+                    prepStatement.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(KartuStok.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return kartuStokList;
+    }
+
+    public static ResultSet isiInformasiBarang(String kode) {
+        Connection connection = null;
+        PreparedStatement prepStatement = null;
+        ResultSet result = null;
+        List<Barang> barangList = new ArrayList<Barang>();
+
+        try {
+            connection = DataBase.getConnection();
+            connection.setAutoCommit(false);
+            String sql = "SELECT b.nama_barang, b.satuan_barang, k.nama_kategori FROM barang b, kategori k WHERE kode_barang = ? "
+                    + "AND b.kode_kategori = k.kode_kategori";
+            System.out.println(sql);
+            prepStatement = connection.prepareStatement(sql);
+            prepStatement.setString(1, kode);
+            result = prepStatement.executeQuery();
+            connection.commit();
+        } catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, "Tidak ditemukan data");
+            Logger.getLogger(KartuStok.class.getName()).log(Level.SEVERE, null, exception);
+        }
+        return result;
+    }
+
 }
