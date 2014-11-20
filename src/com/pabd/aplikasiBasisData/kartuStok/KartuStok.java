@@ -14,10 +14,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -121,6 +127,30 @@ public class KartuStok {
             }
         }
     }
+    
+    public static void hapusData(String pNomorBukti) {
+        Connection connection = null;
+        PreparedStatement prepStatement = null;
+        try {
+            connection = DataBase.getConnection();
+            connection.setAutoCommit(false);
+            String query = "DELETE FROM kartu_stok WHERE nomor_bukti = ?";
+            prepStatement = connection.prepareStatement(query);
+            prepStatement.setString(1, pNomorBukti);
+            prepStatement.executeUpdate();
+            connection.commit();
+            JOptionPane.showMessageDialog(null, "Berhasil dihapus!");
+        } catch (SQLException ex) {
+            Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Gagal menghapus!");
+        } finally {
+            try {
+                prepStatement.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     public static List<Barang> lihatBarangBerdasarKode(String kode) {
         Connection connection = null;
@@ -199,13 +229,14 @@ public class KartuStok {
                 kartuStok.setmKeterangan(result.getString("keterangan"));
                 kartuStok.setmMasuk(result.getDouble("masuk"));
                 kartuStok.setmKeluar(result.getDouble("keluar"));
-                
+
                 if (counter == 0) {
                     saldoAwal = result.getDouble("masuk") - result.getDouble("keluar");
                     kartuStok.setmSaldo(saldoAwal);
                     System.out.println(saldoAwal);
                 } else {
-                    kartuStok.setmSaldo(saldoAwal + (result.getDouble("masuk") - result.getDouble("keluar")));
+                    saldoAwal += (result.getDouble("masuk") - result.getDouble("keluar"));
+                    kartuStok.setmSaldo(saldoAwal);
                 }
 
                 counter++;
@@ -236,7 +267,7 @@ public class KartuStok {
         Connection connection = null;
         PreparedStatement prepStatement = null;
         ResultSet result = null;
-        List<Barang> barangList = new ArrayList<Barang>();
+        List<Barang> barangList = new ArrayList<>();
 
         try {
             connection = DataBase.getConnection();
@@ -248,11 +279,32 @@ public class KartuStok {
             prepStatement.setString(1, kode);
             result = prepStatement.executeQuery();
             connection.commit();
+
         } catch (SQLException exception) {
             JOptionPane.showMessageDialog(null, "Tidak ditemukan data");
             Logger.getLogger(KartuStok.class.getName()).log(Level.SEVERE, null, exception);
+            return null;
         }
         return result;
+    }
+    
+    public static void cetakData() {
+        Connection connection = null;
+        connection = DataBase.getConnection();
+
+        String reportSource = "./report/daftarBarang.jasper";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        JasperPrint jasperPrint = null;
+
+        try {
+            jasperPrint = JasperFillManager.fillReport(reportSource, params, connection);
+        } catch (JRException ex) {
+            Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        JasperViewer.viewReport(jasperPrint, false);
+        
     }
 
 }

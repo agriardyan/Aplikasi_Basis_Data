@@ -5,12 +5,14 @@
  */
 package com.pabd.aplikasiBasisData.kartuStok;
 
+import com.pabd.aplikasiBasisData.barang.Barang;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -23,10 +25,23 @@ public class FormKartuStok extends javax.swing.JFrame {
      */
     public FormKartuStok() {
         initComponents();
+        jInternalFrame1.setVisible(false);
     }
 
-    private void lihatTableKategori() {
+    private void lihatTabelKartuStok() {
+        if(kodeBarangTF.getText().isEmpty())
+        {
+            return ;
+        }
+        
         List<KartuStok> kartuStokList = KartuStok.lihatKartuStokForTableModel(kodeBarangTF.getText());
+        if(kartuStokList.isEmpty())
+        {
+            jInternalFrame1.setVisible(true);
+            List<Barang> barangList = Barang.lihatBarang();
+            BarangTableModel btm = new BarangTableModel(barangList);
+            tableBarangKartuStok.setModel(btm);
+        }
         KartuStokTableModel model = new KartuStokTableModel(kartuStokList);
         tableDaftarBarang.setModel(model);
     }
@@ -73,6 +88,13 @@ public class FormKartuStok extends javax.swing.JFrame {
         hapusButton = new javax.swing.JButton();
         batalButton = new javax.swing.JButton();
         keluarButton = new javax.swing.JButton();
+        jInternalFrame1 = new javax.swing.JInternalFrame();
+        jLabel11 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tableBarangKartuStok = new javax.swing.JTable();
+        keluarInternalFrameButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -195,6 +217,11 @@ public class FormKartuStok extends javax.swing.JFrame {
                 masukTFFocusLost(evt);
             }
         });
+        masukTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                masukTFKeyPressed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel10.setText("Masuk");
@@ -306,6 +333,11 @@ public class FormKartuStok extends javax.swing.JFrame {
         });
 
         hapusButton.setText("Hapus");
+        hapusButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hapusButtonActionPerformed(evt);
+            }
+        });
 
         batalButton.setText("Batal");
         batalButton.addActionListener(new java.awt.event.ActionListener() {
@@ -378,12 +410,110 @@ public class FormKartuStok extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jInternalFrame1.setVisible(true);
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel11.setText("Cari Data Barang");
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel12.setText("Silakan pilih barang yang tersedia :");
+
+        tableBarangKartuStok.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Kode Barang", "Nama Barang"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        tableBarangKartuStok.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableBarangKartuStokMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tableBarangKartuStok);
+
+        keluarInternalFrameButton.setText("Keluar");
+        keluarInternalFrameButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                keluarInternalFrameButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(keluarInternalFrameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(keluarInternalFrameButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
+        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
+        jInternalFrame1Layout.setHorizontalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jInternalFrame1Layout.setVerticalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel11)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
+                    .addContainerGap(76, Short.MAX_VALUE)
+                    .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(310, Short.MAX_VALUE)))
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -391,9 +521,15 @@ public class FormKartuStok extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDesktopPane1Layout.createSequentialGroup()
+                    .addContainerGap(60, Short.MAX_VALUE)
+                    .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(137, Short.MAX_VALUE)))
         );
         jDesktopPane1.setLayer(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jPanel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jDesktopPane1.setLayer(jInternalFrame1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -412,12 +548,15 @@ public class FormKartuStok extends javax.swing.JFrame {
 
     private void kodeBarangTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kodeBarangTFActionPerformed
         // TODO add your handling code here:
-        lihatTableKategori();
-        
+        lihatTabelKartuStok();
+
         ResultSet informasiBarangList;
         informasiBarangList = KartuStok.isiInformasiBarang(kodeBarangTF.getText());
+        
+
         try {
             while (informasiBarangList.next()) {
+                
                 namaBarangTF.setText(informasiBarangList.getString(1));
                 satuanTF.setText(informasiBarangList.getString(2));
                 kategoriTF.setText(informasiBarangList.getString(3));
@@ -438,6 +577,12 @@ public class FormKartuStok extends javax.swing.JFrame {
         namaBarangTF.setText(null);
         kategoriTF.setText(null);
         satuanTF.setText(null);
+        
+        jDateChooser1.setDate(null);
+        noBuktiTF.setText(null);
+        keteranganTF.setText(null);
+        masukTF.setText(null);
+        keluarTF.setText(null);
 
         kodeBarangTF.setEditable(true);
         namaBarangTF.setEditable(true);
@@ -467,6 +612,10 @@ public class FormKartuStok extends javax.swing.JFrame {
         kartuStok.setmKeluar(Double.parseDouble(keluarTF.getText()));
 
         KartuStok.simpanData(kartuStok);
+        
+        batalButtonActionPerformed(evt);
+
+        lihatTabelKartuStok();
     }//GEN-LAST:event_simpanButtonActionPerformed
 
     private void masukTFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_masukTFFocusGained
@@ -490,6 +639,31 @@ public class FormKartuStok extends javax.swing.JFrame {
         // TODO add your handling code here:
         masukTF.setEditable(true);
     }//GEN-LAST:event_keluarTFFocusLost
+
+    private void masukTFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_masukTFKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_masukTFKeyPressed
+
+    private void keluarInternalFrameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keluarInternalFrameButtonActionPerformed
+        // TODO add your handling code here:
+        jInternalFrame1.setVisible(false);
+        jInternalFrame1.dispose();
+    }//GEN-LAST:event_keluarInternalFrameButtonActionPerformed
+
+    private void tableBarangKartuStokMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableBarangKartuStokMouseClicked
+        // TODO add your handling code here:
+        String kode = tableBarangKartuStok.getValueAt(tableBarangKartuStok.getSelectedRow(), 0).toString();
+        keluarInternalFrameButtonActionPerformed(null);
+        kodeBarangTF.setText(kode);
+        kodeBarangTFActionPerformed(null);
+    }//GEN-LAST:event_tableBarangKartuStokMouseClicked
+
+    private void hapusButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusButtonActionPerformed
+        // TODO add your handling code here:
+        String nomorBukti = tableDaftarBarang.getValueAt(tableDaftarBarang.getSelectedRow(), 2).toString();
+        KartuStok.hapusData(nomorBukti);
+        lihatTabelKartuStok();
+    }//GEN-LAST:event_hapusButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -532,8 +706,11 @@ public class FormKartuStok extends javax.swing.JFrame {
     private javax.swing.JButton hapusButton;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -548,9 +725,12 @@ public class FormKartuStok extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField kategoriTF;
     private javax.swing.JButton keluarButton;
+    private javax.swing.JButton keluarInternalFrameButton;
     private javax.swing.JTextField keluarTF;
     private javax.swing.JTextField keteranganTF;
     private javax.swing.JTextField kodeBarangTF;
@@ -559,6 +739,7 @@ public class FormKartuStok extends javax.swing.JFrame {
     private javax.swing.JTextField noBuktiTF;
     private javax.swing.JTextField satuanTF;
     private javax.swing.JButton simpanButton;
+    private javax.swing.JTable tableBarangKartuStok;
     private javax.swing.JTable tableDaftarBarang;
     // End of variables declaration//GEN-END:variables
 }
