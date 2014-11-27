@@ -8,6 +8,7 @@ package com.pabd.aplikasiBasisData.kartuStok;
 import com.pabd.aplikasiBasisData.DBConn.DataBase;
 import com.pabd.aplikasiBasisData.barang.Barang;
 import com.pabd.aplikasiBasisData.kategori.Kategori;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,9 +21,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 
 /**
@@ -288,23 +294,24 @@ public class KartuStok {
         return result;
     }
     
-    public static void cetakData() {
-        Connection connection = null;
-        connection = DataBase.getConnection();
+    public static void cetakDataPadaTabel(JTable pTable, String pIdBarang) {
 
-        String reportSource = "./report/daftarBarang.jasper";
+        String reportSource = "./report/kartu_stok.jrxml";
 
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        JasperPrint jasperPrint = null;
+        Map<String, Object> params = new HashMap<>();
+        
+        params.put("ID_BARANG", pIdBarang);
 
         try {
-            jasperPrint = JasperFillManager.fillReport(reportSource, params, connection);
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportSource);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JRTableModelDataSource(pTable.getModel()));
+            JasperViewer.viewReport(jasperPrint, false);
         } catch (JRException ex) {
             Logger.getLogger(Barang.class.getName()).log(Level.SEVERE, null, ex);
         }
-        JasperViewer.viewReport(jasperPrint, false);
         
     }
+    
+    
 
 }

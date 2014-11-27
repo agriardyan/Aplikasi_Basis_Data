@@ -324,6 +324,11 @@ public class FormKartuStok extends javax.swing.JFrame {
         );
 
         cetakButton.setText("Cetak");
+        cetakButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cetakButtonActionPerformed(evt);
+            }
+        });
 
         simpanButton.setText("Simpan");
         simpanButton.addActionListener(new java.awt.event.ActionListener() {
@@ -664,6 +669,13 @@ public class FormKartuStok extends javax.swing.JFrame {
         KartuStok.hapusData(nomorBukti);
         lihatTabelKartuStok();
     }//GEN-LAST:event_hapusButtonActionPerformed
+
+    private void cetakButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cetakButtonActionPerformed
+        // TODO add your handling code here:
+//        KartuStok.cetakData(tableDaftarBarang);
+        KartuStok.cetakDataPadaTabel(tableDaftarBarang, kodeBarangTF.getText());
+//        System.out.println(tableDaftarBarang.getModel().getColumnName(1));
+    }//GEN-LAST:event_cetakButtonActionPerformed
 
     /**
      * @param args the command line arguments
